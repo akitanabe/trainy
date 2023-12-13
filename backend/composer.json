@@ -10,6 +10,7 @@
     "require": {
         "php": "^8.1",
         "guzzlehttp/guzzle": "^7.8",
+        "imangazaliev/didom": "^2.0",
         "laravel/framework": "^10.10",
         "laravel/sanctum": "^3.3",
         "laravel/tinker": "^2.8"
@@ -37,6 +38,7 @@
         }
     },
     "scripts": {
+        "dev": "@php artisan serve --port=8080 --host=0.0.0.0",
         "post-autoload-dump": [
             "Illuminate\\Foundation\\ComposerScripts::postAutoloadDump",
             "@php artisan package:discover --ansi"

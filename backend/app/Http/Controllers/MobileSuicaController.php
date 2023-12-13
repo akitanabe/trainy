@@ -12,6 +12,10 @@ class MobileSuicaController extends Controller
 
     public function captcha()
     {
-        $this->service->fetchCaptcha();
+        $captcha = $this->service->fetchCaptcha();
+
+        return response($captcha, 200, [
+            'Content-Type' => 'image/gif',
+        ]);
     }
 }

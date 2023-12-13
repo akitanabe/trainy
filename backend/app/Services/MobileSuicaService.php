@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Repositories\MobileSuicaRepository;
+use DiDom\Document;
 
 class MobileSuicaService
 {
@@ -12,6 +13,16 @@ class MobileSuicaService
 
     public function fetchCaptcha()
     {
-        var_dump($this->repository);
+        $html = $this->repository->fetchHtml();
+
+        $document = new Document($html);
+
+        $captchaUri = $document->first('.igc_TrendyCaptchaImage')?->getAttribute('src');
+
+        if ($captchaUri === null) {
+            throw new \Exception('Captcha not found');
+        }
+
+        return $this->repository->downloadCaptcha($captchaUri);
     }
 }
