@@ -1,10 +1,9 @@
 <?php
 
 $rules = [
-    '@PSR12' => true,
-    '@PSR12:risky' => true,
     '@Symfony' => true,
     '@Symfony:risky' => true,
+    'yoda_style' => false,
 ];
 
 $finder = PhpCsFixer\Finder::create()
