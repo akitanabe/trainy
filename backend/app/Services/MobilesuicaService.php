@@ -4,14 +4,20 @@ declare(strict_types=1);
 
 namespace App\Services;
 
-use App\Repositories\MobileSuicaRepository;
+use App\Repositories\MobilesuicaRepository;
 use DiDom\Document;
+
+enum MobilesuicaState: string
+{
+    case CAPTCHA = 'CAPTCHA';
+    case LOGIN = 'LOGIN';
+}
 
 class MobilesuicaService
 {
     public function __construct(protected MobilesuicaRepository $repository) {}
 
-    public function fetchCaptcha()
+    public function fetchCaptcha(): string
     {
         $html = $this->repository->fetchHtml();
 
@@ -23,6 +29,10 @@ class MobilesuicaService
             throw new \Exception('Captcha not found');
         }
 
-        return $this->repository->downloadCaptcha($captchaUri);
+        $captcha = $this->repository->downloadCaptcha($captchaUri);
+
+        $this->repository->saveCookie(MobilesuicaState::CAPTCHA);
+
+        return $captcha;
     }
 }
