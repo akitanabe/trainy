@@ -1,14 +1,14 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Http\Controllers;
 
-use App\Services\MobileSuicaService;
+use App\Services\MobilesuicaService;
 
-class MobileSuicaController extends Controller
+class MobilesuicaController extends Controller
 {
-    public function __construct(protected MobileSuicaService $service)
-    {
-    }
+    public function __construct(protected MobilesuicaService $service) {}
 
     public function captcha()
     {

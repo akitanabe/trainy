@@ -1,15 +1,15 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Services;
 
 use App\Repositories\MobileSuicaRepository;
 use DiDom\Document;
 
-class MobileSuicaService
+class MobilesuicaService
 {
-    public function __construct(protected MobileSuicaRepository $repository)
-    {
-    }
+    public function __construct(protected MobilesuicaRepository $repository) {}
 
     public function fetchCaptcha()
     {

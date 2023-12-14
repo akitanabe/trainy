@@ -1,8 +1,10 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Providers;
 
-use App\Services\MobileSuicaService;
+use App\Services\MobilesuicaService;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
@@ -12,9 +14,9 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
-        $this->app->singleton(MobileSuicaService::class, function ($app) {
-            return new MobileSuicaService(
-                $app->make(\App\Repositories\MobileSuicaRepository::class)
+        $this->app->singleton(MobilesuicaService::class, function ($app) {
+            return new MobilesuicaService(
+                $app->make(\App\Repositories\MobilesuicaRepository::class)
             );
         });
     }
@@ -22,7 +24,5 @@ class AppServiceProvider extends ServiceProvider
     /**
      * Bootstrap any application services.
      */
-    public function boot(): void
-    {
-    }
+    public function boot(): void {}
 }
