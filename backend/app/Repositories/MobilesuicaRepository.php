@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Repositories;
 
+use App\Services\MobilesuicaFormParams;
 use App\Services\MobilesuicaState;
 use GuzzleHttp\Client;
 use GuzzleHttp\Cookie\CookieJar;
@@ -71,6 +72,26 @@ readonly class MobilesuicaRepository
         $res = $this->client->request('GET', $url);
 
         return $res->getBody()->getContents();
+    }
+
+    public function saveFormParams(MobilesuicaFormParams $mobilesuicaFormParams): void
+    {
+        session_start();
+
+        $_SESSION[self::SESSION_KEY . '_FORM'] = $mobilesuicaFormParams->toArray();
+
+        session_write_close();
+    }
+
+    public function getFormParams(): MobilesuicaFormParams
+    {
+        session_start();
+
+        $formParams = $_SESSION[self::SESSION_KEY . '_FORM'] ?? [];
+
+        session_write_close();
+
+        return new MobilesuicaFormParams($formParams);
     }
 
     public function saveCookie(MobilesuicaState $state): void
