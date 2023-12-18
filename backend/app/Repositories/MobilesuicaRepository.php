@@ -40,9 +40,18 @@ readonly class MobilesuicaRepository
      * @throws \GuzzleHttp\Exception\GuzzleException
      *
      */
-    public function fetchHtml(string $uri = ''): string
+    public function fetchHtml(string $uri = '', ?MobilesuicaState $state = null): string
     {
         $url = self::BASE_URL . '/' . ltrim($uri, '/');
+        $domain = parse_url(self::BASE_URL, PHP_URL_HOST);
+
+        if ($state !== null && is_string($domain)) {
+            $cookies = $this->getCookie($state);
+
+            foreach ($cookies as $cookie) {
+                $this->cookieJar->fromArray($cookie, $domain);
+            }
+        }
 
         $res = $this->client->request('GET', $url);
 
@@ -70,5 +79,16 @@ readonly class MobilesuicaRepository
 
         $_SESSION[self::SESSION_KEY . "_{$state->value}"] = $this->cookieJar->toArray();
         session_write_close();
+    }
+
+    public function getCookie(MobilesuicaState $state): array
+    {
+        session_start();
+
+        $cookies = $_SESSION[self::SESSION_KEY . "_{$state->value}"] ?? [];
+
+        session_write_close();
+
+        return $cookies;
     }
 }
