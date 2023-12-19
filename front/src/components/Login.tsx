@@ -18,23 +18,18 @@ import { createTheme, ThemeProvider } from "@mui/material/styles";
 
 import axios from "axios";
 
-type UseStateSessionId = [string, Dispatch<SetStateAction<string>>];
-
-const fetchCaptcha = async ([
-  sessionId,
-  setSessionId,
-]: UseStateSessionId): Promise<string> => {
+const fetchCaptcha = async (): Promise<string> => {
   let captchaUrl = "";
 
   try {
-    const res = await axios.get<Blob>("/api/captcha", {
-      responseType: "blob",
-      headers: {
-        "x-session-id": sessionId,
-      },
-    });
+    const res = await axios.get<Blob>(
+      "http://localhost:8000/api/mobilesuica/captcha",
+      {
+        responseType: "blob",
+        withCredentials: true,
+      }
+    );
 
-    setSessionId(res.headers["x-session-id"]);
     captchaUrl = URL.createObjectURL(res.data);
   } catch (e) {
     console.log(e);
@@ -43,13 +38,15 @@ const fetchCaptcha = async ([
   return captchaUrl;
 };
 
-const auth = async (sessionId: string) => {
+type AuthParams = { email: string; password: string; captcha: string };
+
+const auth = async (params: AuthParams) => {
   try {
-    const res = await axios.get("/api/auth", {
-      headers: {
-        "x-session-id": sessionId,
-      },
-    });
+    const res = await axios.post(
+      "http://localhost:8000/api/mobilesuica/auth",
+      params,
+      { withCredentials: true }
+    );
   } catch (e) {
     console.log(e);
   }
@@ -59,27 +56,23 @@ const auth = async (sessionId: string) => {
 const defaultTheme = createTheme();
 
 export default function LogIn() {
-  const handleSubmit = (
-    event: FormEvent<HTMLFormElement>,
-    sessionId: string
-  ) => {
+  const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
-    console.log({
-      email: data.get("email"),
-      password: data.get("password"),
-    });
-    auth(sessionId);
+    const params: AuthParams = {
+      email: data.get("email")?.toString() ?? "",
+      password: data.get("password")?.toString() ?? "",
+      captcha: data.get("captcha")?.toString() ?? "",
+    };
+
+    auth(params);
   };
 
   const [captcha, setCaptcha] = useState<string>("");
-  const [sessionId, setSessionId] = useState<string>("");
 
   useEffect(() => {
     if (captcha === "") {
-      fetchCaptcha([sessionId, setSessionId]).then((captcha) =>
-        setCaptcha(captcha)
-      );
+      fetchCaptcha().then((captcha) => setCaptcha(captcha));
     }
   }, []);
 
@@ -103,7 +96,7 @@ export default function LogIn() {
           </Typography>
           <Box
             component="form"
-            onSubmit={(e) => handleSubmit(e, sessionId)}
+            onSubmit={(e) => handleSubmit(e)}
             noValidate
             sx={{ mt: 1 }}
           >
@@ -132,6 +125,15 @@ export default function LogIn() {
               label="Remember me"
             />
             <Box>
+              <TextField
+                margin="normal"
+                required
+                fullWidth
+                name="captcha"
+                label="キャプチャ"
+                type="text"
+                id="captcha"
+              />
               <img src={captcha} />
             </Box>
             <Button
